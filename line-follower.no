@@ -1,0 +1,82 @@
+// 3 IR Sensor Line Follower Code for Arduino (L9110S Motor Driver)
+// Pin Definitions
+
+// Left Motor (connected to B-12 or A-1B terminals of L9110S)
+const int motorA1 = 3; 
+const int motorA2 = 4; 
+
+// Right Motor (connected to B-1A or B-1B terminals of L9110S)
+const int motorB1 = 5; 
+const int motorB2 = 6; 
+
+// IR Sensor Pins
+const int leftIR = A0;
+const int centerIR = A1;
+const int rightIR = A2;
+
+void setup() {
+  // Set motor pins as outputs
+  pinMode(motorA1, OUTPUT);
+  pinMode(motorA2, OUTPUT);
+  pinMode(motorB1, OUTPUT);
+  pinMode(motorB2, OUTPUT);
+
+  // Set IR sensor pins as inputs
+  pinMode(leftIR, INPUT);
+  pinMode(centerIR, INPUT);
+  pinMode(rightIR, INPUT);
+}
+
+void loop() {
+  // Read sensor values 
+  // (Assuming digital output from IR modules: LOW = line detected, HIGH = white floor)
+  int leftState = digitalRead(leftIR);
+  int centerState = digitalRead(centerIR);
+  int rightState = digitalRead(rightIR);
+
+  // Condition 1: Center sensor detects line, go straight
+  if (centerState == LOW && leftState == HIGH && rightState == HIGH) {
+    moveForward();
+  }
+  // Condition 2: Left sensor detects line, turn left
+  else if (leftState == LOW && centerState == HIGH) {
+    turnLeft();
+  }
+  // Condition 3: Right sensor detects line, turn right
+  else if (rightState == LOW && centerState == HIGH) {
+    turnRight();
+  }
+  // Default: Stop or move forward if lost
+  else {
+    moveForward();
+  }
+}
+
+// Movement Functions
+void moveForward() {
+  digitalWrite(motorA1, HIGH);
+  digitalWrite(motorA2, LOW);
+  digitalWrite(motorB1, HIGH);
+  digitalWrite(motorB2, LOW);
+}
+
+void turnLeft() {
+  digitalWrite(motorA1, LOW);
+  digitalWrite(motorA2, HIGH);
+  digitalWrite(motorB1, HIGH);
+  digitalWrite(motorB2, LOW);
+}
+
+void turnRight() {
+  digitalWrite(motorA1, HIGH);
+  digitalWrite(motorA2, LOW);
+  digitalWrite(motorB1, LOW);
+  digitalWrite(motorB2, HIGH);
+}
+
+void stopRobot() {
+  digitalWrite(motorA1, LOW);
+  digitalWrite(motorA2, LOW);
+  digitalWrite(motorB1, LOW);
+  digitalWrite(motorB2, LOW);
+}
